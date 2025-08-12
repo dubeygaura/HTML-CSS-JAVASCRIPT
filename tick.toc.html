@@ -1,0 +1,205 @@
+<html>
+
+<head>
+    <style>
+       body {
+    background: linear-gradient(red,rgb(18, 162, 245),green,yellow,pink,rgb(216, 203, 203));
+    font-family: Arial, sans-serif;
+   
+}
+
+h1, h3 {
+    text-align: center;
+    color: black;
+}
+
+table {
+    margin: auto;
+    border-collapse: separate;
+    border-spacing: 20px; /* Gap between cells */
+}
+
+table tr td {
+    width: 120px;
+    height: 120px;
+    text-align: center;
+    font-size: 100px;
+    font-weight: bold;
+    cursor: pointer;
+    background-color: yellow;
+    border-radius: 20px; /* Rounded corners */
+    box-shadow: 0px 4px 10px rgba(0,0,0,0.3);
+    border: none; /* Remove border lines */
+}
+
+#hint {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 24px;
+    font-weight: bold;
+    color: red;
+    
+}
+ .box{
+    width: 98%;
+    height: 95%;
+    background: rgba(red, green, blue, alpha);
+    border: 2px solid white ;
+    border-radius: 20px;
+
+
+}
+    </style>
+</head>
+<body>
+<body id="box"></body>
+
+
+    <h1> Tic Tac Toe </h1>
+    <h3>Timer: <span id="time">00:00</span></h3>
+
+    <table align="center">
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+    </table>
+
+    <h1 id="hint"></h1>
+
+    <!--  Corrected Audio Elements -->
+    <audio src="music22.wav" id="sound1"></audio> <!--X sound -->
+    <audio src="music11.wav" id="sound2"></audio> <!-- O sound -->
+
+    <script>
+
+        var gamestate = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+        var winpositions = [
+            [0, 1, 2],
+            [3, 4, 5],
+            [6, 7, 8],
+            [0, 3, 6],
+            [1, 4, 7],
+            [2, 5, 8],
+            [0, 4, 8],
+            [2, 4, 6]
+        ];
+
+        var turn = 1; // 1 = X , 2 = O 
+
+        // add onclick function to all TD tag
+        var alltd = document.querySelectorAll("td");
+        alltd.forEach((td, index) => {
+            td.onclick = function () {
+                tap(this, index);
+            }
+        })
+
+        // define tap function
+        function tap(td, index) {
+
+            if (totalseconds == 0)
+            {
+                hint.innerHTML = "Time Up!";
+                return false;
+            }
+
+            if (totalseconds == 20)
+            {
+                timer();
+            }
+
+            if (turn == 1 && gamestate[index] == 0)
+            {
+                td.innerHTML = "X";
+                gamestate[index] = 1;
+                turn = 2;
+
+                //  X ka sound play yaha
+                document.getElementById("sound1").play();
+            }
+            else if (turn == 2 && gamestate[index] == 0)
+            {
+                td.innerHTML = "o";
+                gamestate[index] = 2;
+                turn = 1;
+
+                //  O ka sound play yaha 
+                document.getElementById("sound2").play();
+            }
+
+            checkwinner();
+        }
+
+        function checkwinner() {
+            var winner = 0;
+
+            for (var pos of winpositions)
+            {
+                if (gamestate[pos[0]] == gamestate[pos[1]] && gamestate[pos[1]] == gamestate[pos[2]] && gamestate[pos[0]] != 0)
+                {
+                    winner = gamestate[pos[0]];
+                    turn = 0;
+                }
+            }
+
+            if (winner == 1)
+            {
+                hint.innerHTML = "X Player WON";
+                const msg = new SpeechSynthesisUtterance("X Player Won");
+                window.speechSynthesis.speak(msg);
+            }
+            else if (winner == 2)
+            {
+                hint.innerHTML = "O Player WON";
+                const msg = new SpeechSynthesisUtterance("O Player Won");
+                window.speechSynthesis.speak(msg);
+            }
+
+            // check game draw 
+            if (winner == 0 && !gamestate.includes(0))
+            {
+                hint.innerHTML = "GAME DRAW";
+                const msg = new SpeechSynthesisUtterance("Game Draw");
+                window.speechSynthesis.speak(msg);
+                turn = 0;
+            }
+        }
+
+        var totalseconds = 20;
+        function timer() {
+            totalseconds--;
+            var m = parseInt(totalseconds / 60);
+            var s = totalseconds % 60;
+            time.innerHTML = m + ":" + (s < 10 ? "0" + s : s);
+
+            if (totalseconds == 0)
+            {
+                hint.innerHTML = "Times up!";
+            }
+
+            if (totalseconds > 0 && turn > 0)
+            {
+                setTimeout(() => {
+                    timer();
+                }, 1000);
+            }
+        }
+
+    </script>
+
+</body>
+
+</html>
